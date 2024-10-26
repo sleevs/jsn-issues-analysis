@@ -8,8 +8,10 @@ import br.com.jsnissueanalysis.dto.ResponseDto;
 import br.com.jsnissueanalysis.dto.UserDto;
 import br.com.jsnissueanalysis.service.ContextService;
 import br.com.jsnissueanalysis.service.GitHubService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 
 @RestController
 public class IssueController {
@@ -23,13 +25,19 @@ public class IssueController {
 
 
     @PostMapping
-    public Mono<ResponseDto> get(){
+    @CircuitBreaker( name ="requestIssues" ,fallbackMethod="fallbackMethod")
+    public Mono<ResponseDto> requestIssues(){
 
     return gitHubService.processamentoRequest();
 
     }
 
+    public String fallbackMethod(){
+        return "Ocorreu um erro a realizar a solicitação";
+    }
+
     @PostMapping(value="/get-contributor")
+    
     public Flux<ContributorDto> getContributors(){
 
     return gitHubService.getContributors();

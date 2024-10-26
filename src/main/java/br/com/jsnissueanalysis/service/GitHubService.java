@@ -20,7 +20,7 @@ public class GitHubService implements Strategy {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final String GITHUB_API = "https://api.github.com";
-    private String github_token= "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";
+    private String github_token= "";
     private WebClient webClient;
 
    
