@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import br.com.jsnissueanalysis.dto.ContributorDto;
-import br.com.jsnissueanalysis.dto.ResponseDto;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
 
 @Service
 public class ContributorService  {

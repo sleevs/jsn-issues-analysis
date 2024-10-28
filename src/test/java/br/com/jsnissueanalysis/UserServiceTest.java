@@ -84,7 +84,7 @@ public class UserServiceTest {
         StepVerifier.create(result)
                 .expectNextMatches(userDto ->
                         userDto.getName().equals("testUser") &&
-                        userDto.getRepositoryName().equals("repoName")
+                        userDto.getRepository().equals("repoName")
                 )
                 .expectComplete()
                 .verify();

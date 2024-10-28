@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import br.com.jsnissueanalysis.dto.RequestDto;
 import br.com.jsnissueanalysis.dto.ResponseDto;
 import br.com.jsnissueanalysis.dto.UserDto;
 import br.com.jsnissueanalysis.service.GitHubService;
@@ -23,16 +24,16 @@ public class IssueController {
     }
 
 
- @PostMapping
+    @PostMapping(value = "/v1/request-after")
 @CircuitBreaker(name = "requestIssues", fallbackMethod = "fallbackMethod")
-public Mono<ResponseDto> requestIssues(@RequestBody UserDto userDto) {
+public Mono<ResponseDto> requestIssuesAfter(@RequestBody RequestDto request) {
     
-    if (userDto.getName() == null || userDto.getName().isEmpty()) {
+    if (request.getUsername() == null || request.getUsername().isEmpty()) {
         return Mono.error(new IllegalArgumentException("O nome do usuário não pode ser nulo ou vazio."));
     }
 
 
-    return gitHubService.processamentoRequest(userDto)
+    return gitHubService.sendAfter(request)
         .onErrorResume(throwable -> {
             if (throwable instanceof WebClientResponseException) {
                 WebClientResponseException webClientException = (WebClientResponseException) throwable;
@@ -43,10 +44,35 @@ public Mono<ResponseDto> requestIssues(@RequestBody UserDto userDto) {
                     return Mono.just(createErrorResponse("Recurso não encontrado: " + webClientException.getResponseBodyAsString()));
                 }
             }
-            return Mono.error(throwable); // Retorna erro para outros casos
+            return Mono.error(throwable); 
         });
     }
 
+
+
+ @PostMapping(value = "/v1/request-now")
+ @CircuitBreaker(name = "requestIssues", fallbackMethod = "fallbackMethod")
+ public Mono<ResponseDto> requestIssuesNow(@RequestBody RequestDto request) {
+     
+     if (request.getUsername() == null || request.getUsername().isEmpty()) {
+         return Mono.error(new IllegalArgumentException("O nome do usuário não pode ser nulo ou vazio."));
+     }
+ 
+ 
+     return gitHubService.sendNow(request)
+         .onErrorResume(throwable -> {
+             if (throwable instanceof WebClientResponseException) {
+                 WebClientResponseException webClientException = (WebClientResponseException) throwable;
+   
+                 if (webClientException.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                     return Mono.just(createErrorResponse("Erro de solicitação: " + webClientException.getResponseBodyAsString()));
+                 } else if (webClientException.getStatusCode() == HttpStatus.NOT_FOUND) {
+                     return Mono.just(createErrorResponse("Recurso não encontrado: " + webClientException.getResponseBodyAsString()));
+                 }
+             }
+             return Mono.error(throwable); 
+         });
+     }
     // Método para criar uma resposta de erro
     private ResponseDto createErrorResponse(String message) {
         ResponseDto responseDto = new ResponseDto();

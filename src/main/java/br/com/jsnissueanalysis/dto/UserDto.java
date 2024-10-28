@@ -3,15 +3,15 @@ package br.com.jsnissueanalysis.dto;
 public class UserDto {
 
     private String name;
-    private String repositoryName;
+    private String repositor;
 
     // Constructor
     public UserDto(){
         
     }
-    public UserDto(String name, String repositoryName) {
+    public UserDto(String name, String repositor) {
         this.name = name;
-        this.repositoryName = repositoryName;
+        this.repositor = repositor;
     }
 
     // Getters
@@ -19,8 +19,8 @@ public class UserDto {
         return name;
     }
 
-    public String getRepositoryName() {
-        return repositoryName;
+    public String getRepository() {
+        return repositor;
     }
     
 }
