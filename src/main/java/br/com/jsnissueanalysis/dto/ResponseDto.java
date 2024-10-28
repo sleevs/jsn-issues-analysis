@@ -2,12 +2,16 @@ package br.com.jsnissueanalysis.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 public class ResponseDto {
 
-    UserDto user;
-    List<ContributorDto> contributor;
-    List<IssueDto> issues;
+    private UserDto user;
+    private List<ContributorDto> contributor;
+    private List<IssueDto> issues;
+    @JsonIgnore
+    private String erro ;
 
     public ResponseDto(){}
 
@@ -33,6 +37,14 @@ public class ResponseDto {
 
     public void setIssues(List<IssueDto> issues) {
         this.issues = issues;
+    }
+
+    public String getErro() {
+        return erro;
+    }
+
+    public void setErro(String erro) {
+        this.erro = erro;
     }
 
     

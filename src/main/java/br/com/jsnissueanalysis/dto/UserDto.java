@@ -6,6 +6,9 @@ public class UserDto {
     private String repositoryName;
 
     // Constructor
+    public UserDto(){
+        
+    }
     public UserDto(String name, String repositoryName) {
         this.name = name;
         this.repositoryName = repositoryName;

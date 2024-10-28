@@ -1,15 +1,15 @@
 package br.com.jsnissueanalysis.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import br.com.jsnissueanalysis.dto.ContributorDto;
-import br.com.jsnissueanalysis.dto.IssueDto;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
 import br.com.jsnissueanalysis.dto.ResponseDto;
 import br.com.jsnissueanalysis.dto.UserDto;
-import br.com.jsnissueanalysis.service.ContextService;
 import br.com.jsnissueanalysis.service.GitHubService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -17,49 +17,49 @@ import reactor.core.publisher.Mono;
 public class IssueController {
 
     private GitHubService gitHubService;
-    private ContextService contextService;
-
+  
     public IssueController(GitHubService gitHubService){
         this.gitHubService = gitHubService;
     }
 
 
-    @PostMapping
-    @CircuitBreaker( name ="requestIssues" ,fallbackMethod="fallbackMethod")
-    public Mono<ResponseDto> requestIssues(){
-
-    return gitHubService.processamentoRequest();
-
-    }
-
-    public String fallbackMethod(){
-        return "Ocorreu um erro a realizar a solicitação";
-    }
-
-    @PostMapping(value="/get-contributor")
+ @PostMapping
+@CircuitBreaker(name = "requestIssues", fallbackMethod = "fallbackMethod")
+public Mono<ResponseDto> requestIssues(@RequestBody UserDto userDto) {
     
-    public Flux<ContributorDto> getContributors(){
-
-    return gitHubService.getContributors();
-
+    if (userDto.getName() == null || userDto.getName().isEmpty()) {
+        return Mono.error(new IllegalArgumentException("O nome do usuário não pode ser nulo ou vazio."));
     }
 
 
-
-    @PostMapping(value="/get-issues")
-    public Flux<IssueDto> gerIssues(){
-
-    return gitHubService.getIssues();
-
+    return gitHubService.processamentoRequest(userDto)
+        .onErrorResume(throwable -> {
+            if (throwable instanceof WebClientResponseException) {
+                WebClientResponseException webClientException = (WebClientResponseException) throwable;
+  
+                if (webClientException.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                    return Mono.just(createErrorResponse("Erro de solicitação: " + webClientException.getResponseBodyAsString()));
+                } else if (webClientException.getStatusCode() == HttpStatus.NOT_FOUND) {
+                    return Mono.just(createErrorResponse("Recurso não encontrado: " + webClientException.getResponseBodyAsString()));
+                }
+            }
+            return Mono.error(throwable); // Retorna erro para outros casos
+        });
     }
 
-
-
-    @PostMapping(value="/get-user")
-    public Mono<UserDto> gerUser(){
-
-    return gitHubService.getUser();
-
+    // Método para criar uma resposta de erro
+    private ResponseDto createErrorResponse(String message) {
+        ResponseDto responseDto = new ResponseDto();
+        responseDto.setErro(message);
+        return responseDto;
     }
+
+    // Método de fallback para o Circuit Breaker
+    public Mono<ResponseDto> fallbackMethod(UserDto userDto, Throwable throwable) {
+        ResponseDto responseDto = new ResponseDto();
+        responseDto.setErro("Erro ao processar a requisição: " + throwable.getMessage());
+        return Mono.just(responseDto);
+    }
+
     
 }

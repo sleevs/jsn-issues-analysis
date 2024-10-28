@@ -55,10 +55,31 @@
 		</dependency>
 
 		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>5.4.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+				<!-- https://mvnrepository.com/artifact/io.projectreactor/reactor-test -->
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
+			<version>3.6.11</version>
+			<scope>test</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>5.14.2</version>
+			<scope>test</scope>
+		</dependency>
+
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
