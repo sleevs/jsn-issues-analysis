@@ -1,6 +1,6 @@
 
 Esta é uma demostração da implementação de um serviço que recupera todas as issues de um determinado repositório
-no github e retorne um JSON. Foram implementadas duas operações:
+no github e retorna um JSON. Foram implementadas duas operações:
 #### Enviar issues : retorna assincronamente com 1 dia de diferença via webhook com as issues e contribuidores que existiam no projeto no momento da chamada.
 #### Receber agora : retorna imediatamente o resultado para o usuário via API 
 
