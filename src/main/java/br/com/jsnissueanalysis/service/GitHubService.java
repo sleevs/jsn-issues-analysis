@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import br.com.jsnissueanalysis.dto.RequestDto;
+import br.com.jsnissueanalysis.dto.RequestNowDto;
 import br.com.jsnissueanalysis.dto.ResponseDto;
-import br.com.jsnissueanalysis.dto.UserDto;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -48,7 +48,7 @@ public class GitHubService  {
         return uriBase;
      
     }
-    public Mono<ResponseDto> sendNow(RequestDto request){
+    public Mono<ResponseDto> sendNow(RequestNowDto request){
         
         
         return Mono.zip(
